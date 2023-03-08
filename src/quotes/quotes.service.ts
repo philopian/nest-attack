@@ -5,23 +5,37 @@ import { UpdateQuoteDto } from './dto/update-quote.dto'
 
 @Injectable()
 export class QuotesService {
+  private lastQuotetId = 0
+  private quotes = {}
+
   create(createQuoteDto: CreateQuoteDto) {
-    return 'This action adds a new quote'
+    const id = ++this.lastQuotetId
+    const newItem = { id, ...createQuoteDto }
+    this.quotes[id] = newItem
+    return { data: newItem }
   }
 
   findAll() {
-    return `This action returns all quotes`
+    const data = Object.entries(this.quotes).map((item) => this.quotes[item[0]])
+    return { data }
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} quote`
+    const item = this.quotes[id]
+    return { data: item }
   }
 
   update(id: number, updateQuoteDto: UpdateQuoteDto) {
-    return `This action updates a #${id} quote`
+    this.quotes[id] = updateQuoteDto
+    return { data: this.quotes[id] }
   }
 
   remove(id: number) {
-    return `This action removes a #${id} quote`
+    const deletedItem = this.quotes[id]
+    delete this.quotes[id]
+    return {
+      message: 'Deleted',
+      data: deletedItem,
+    }
   }
 }

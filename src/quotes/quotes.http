@@ -1,0 +1,31 @@
+@URL = http://localhost:3000
+
+###
+POST {{URL}}/quotes HTTP/1.1
+content-type: application/json
+
+{
+  "author": "Steve",
+  "quote":"sdkjfskjdfh"
+}
+
+###
+GET {{URL}}/quotes HTTP/1.1
+
+###
+@id = 2
+GET {{URL}}/quotes/{{id}} HTTP/1.1
+
+###
+PUT {{URL}}/quotes/2 HTTP/1.1
+content-type: application/json
+
+{
+  "id": 2,
+  "author": "Mike",
+  "quote":"sdkjfskjdfh"
+}
+
+
+###
+DELETE {{URL}}/quotes/2 HTTP/1.1
