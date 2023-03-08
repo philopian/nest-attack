@@ -1,0 +1,4 @@
+@URL = http://localhost:3003
+
+
+GET {{URL}} HTTP/1.1
