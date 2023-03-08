@@ -8,12 +8,12 @@
   "scripts": {
     "build": "nest build",
     "postbuild": "lambda-zipper build -f dist -o build/app.zip",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/*.ts\" \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "prettier --config .prettierrc src/**/*.{ts,tsx,js,jsx} --write",
+    "lint": "prettier --config .prettierrc src/**/*.ts --write",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -23,6 +23,7 @@
   "dependencies": {
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^9.0.0",
     "dotenv": "^16.0.3",
     "reflect-metadata": "^0.1.13",
