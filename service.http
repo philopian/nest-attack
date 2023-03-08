@@ -1,4 +1,4 @@
 @URL = http://localhost:3003
 
 
-GET {{URL}} HTTP/1.1
+GET {{URL}}/quotes HTTP/1.1
