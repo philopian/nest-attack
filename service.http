@@ -1,4 +1,33 @@
-@URL = http://localhost:3003
+@URL = http://localhost:3000
 
 
+
+###
+POST url HTTP/1.1
+typ: application/json
+
+{
+
+}
+
+###
 GET {{URL}}/quotes HTTP/1.1
+
+###
+@id = 1
+GET {{URL}}/quotes/{{id}} HTTP/1.1
+
+
+
+
+###
+PUT {{URL}}/quotes/{{id}} HTTP/1.1
+typ: application/json
+
+{
+  
+}
+
+
+###
+DELETE {{URL}}/quotes/{{id}} HTTP/1.1

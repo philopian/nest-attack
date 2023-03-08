@@ -1,1 +1,4 @@
-export class CreateQuoteDto {}
+export class CreateQuoteDto {
+  quote: string
+  author: string
+}

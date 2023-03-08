@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateQuoteDto } from './create-quote.dto';
+import { PartialType } from '@nestjs/mapped-types'
 
-export class UpdateQuoteDto extends PartialType(CreateQuoteDto) {}
+import { CreateQuoteDto } from './create-quote.dto'
+
+export class UpdateQuoteDto extends PartialType(CreateQuoteDto) {
+  id: number
+}
