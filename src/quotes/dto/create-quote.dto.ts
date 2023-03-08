@@ -1,13 +1,13 @@
-import { IsNotEmpty, Length } from 'class-validator'
+import { IsNotEmpty, IsString, Length } from 'class-validator'
 
 export class CreateQuoteDto {
-  @IsNotEmpty()
-
-  // Quote
   @Length(3)
+  @IsNotEmpty()
+  @IsString()
   quote: string
 
-  // Author
+  @IsNotEmpty()
   @Length(3, 30)
+  @IsString()
   author: string
 }
