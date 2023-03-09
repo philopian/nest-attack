@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
 import { PrismaError } from '../utils/prisma/prisma-error'
@@ -9,43 +9,53 @@ import { QuoteNotFoundException } from './quoteNotFound.exception'
 
 @Injectable()
 export class QuotesService {
+  private readonly logger = new Logger(QuotesService.name)
+
   constructor(private prismaService: PrismaService) {}
 
   async create(createQuoteDto: CreateQuoteDto) {
     const newQuote = await this.prismaService.quote.create({
       data: createQuoteDto,
     })
+    this.logger.log('[create]', newQuote)
     return { data: newQuote }
   }
 
   async findAll() {
     const data = await this.prismaService.quote.findMany()
+    this.logger.log('[findAll]', data)
     return { data }
   }
 
   async findOne(id: number) {
-    const quote = await this.prismaService.quote.findUnique({
+    const data = await this.prismaService.quote.findUnique({
       where: { id },
     })
-    if (!quote) throw new QuoteNotFoundException(id)
-
-    return { data: quote }
+    if (!data) {
+      this.logger.warn('[findOne]', ' not found')
+      throw new QuoteNotFoundException(id)
+    }
+    this.logger.log('[findOne]', data)
+    return { data }
   }
 
   async update(id: number, updateQuoteDto: UpdateQuoteDto) {
     try {
-      return await this.prismaService.quote.update({
+      const data = await this.prismaService.quote.update({
         data: {
           ...updateQuoteDto,
           id: undefined,
         },
         where: { id },
       })
+      this.logger.log('[update]', data)
+      return { message: 'Updated', data }
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === PrismaError.RecordDoesNotExist
       ) {
+        this.logger.error('[update] ', id)
         throw new QuoteNotFoundException(id)
       }
       throw error
@@ -54,18 +64,17 @@ export class QuotesService {
 
   async remove(id: number) {
     try {
-      const item = await this.prismaService.quote.delete({
+      const data = await this.prismaService.quote.delete({
         where: { id },
       })
-      return {
-        message: 'Deleted',
-        data: item,
-      }
+      this.logger.log('[remove]', data)
+      return { message: 'Deleted', data }
     } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         error.code === PrismaError.RecordDoesNotExist
       ) {
+        this.logger.error('[remove] ', id)
         throw new QuoteNotFoundException(id)
       }
       throw error
