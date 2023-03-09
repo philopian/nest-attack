@@ -13,8 +13,10 @@
     "docker:run": "docker run --name snack-attack --rm  -p 3000:3000 -t snack-attack-api",
     "docker:db:up": "docker-compose up",
     "docker:db:down": "docker-compose down",
-    "preprisma:migrate": "cat prisma/base.prisma > prisma/schema.prisma && cat src/*/*.prisma >> prisma/schema.prisma",
-    "prisma:migrate": "npx prisma migrate dev --name migrate --preview-feature",
+    "preprisma:snapshot": "cat prisma/base.prisma > prisma/schema.prisma && cat src/*/*.prisma >> prisma/schema.prisma",
+    "prisma:snapshot": "npx prisma migrate dev --name migrate --preview-feature",
+    "preprisma:push": "cat prisma/base.prisma > prisma/schema.prisma && cat src/*/*.prisma >> prisma/schema.prisma",
+    "prisma:push": "prisma db push",
     "format": "prettier --write \"src/*.ts\" \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node main",
     "start:dev": "nest start --watch",
@@ -26,7 +28,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "new": "nest generate resource"
+    "new": "nest generate resource",
+    "postnew": "yarn lint"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
