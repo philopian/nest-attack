@@ -1,0 +1,6 @@
+
+model quote {
+  id        Int      @default(autoincrement()) @id
+  quote     String
+  author    String
+}

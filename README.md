@@ -19,3 +19,15 @@ $ yarn start:dev
   ```
 
 
+# PG Admin
+- Go to PGAdmin to see our database, got to http://localhost:8080
+  - Login with:
+    ```json
+    {
+      name: container-postgresdb,
+      host: host.docker.internal,
+      database: postgres,
+      user: postgres,
+      password: admin
+    }
+    ```

@@ -1,41 +1,74 @@
 import { Injectable } from '@nestjs/common'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
 
+import { PrismaError } from '../utils/prisma/prisma-error'
+import { PrismaService } from '../utils/prisma/prisma.service'
 import { CreateQuoteDto } from './dto/create-quote.dto'
 import { UpdateQuoteDto } from './dto/update-quote.dto'
+import { QuoteNotFoundException } from './quoteNotFound.exception'
 
 @Injectable()
 export class QuotesService {
-  private lastQuotetId = 0
-  private quotes = {}
+  constructor(private prismaService: PrismaService) {}
 
-  create(createQuoteDto: CreateQuoteDto) {
-    const id = ++this.lastQuotetId
-    const newItem = { id, ...createQuoteDto }
-    this.quotes[id] = newItem
-    return { data: newItem }
+  async create(createQuoteDto: CreateQuoteDto) {
+    const newQuote = await this.prismaService.quote.create({
+      data: createQuoteDto,
+    })
+    return { data: newQuote }
   }
 
-  findAll() {
-    const data = Object.entries(this.quotes).map((item) => this.quotes[item[0]])
+  async findAll() {
+    const data = await this.prismaService.quote.findMany()
     return { data }
   }
 
-  findOne(id: number) {
-    const item = this.quotes[id]
-    return { data: item }
+  async findOne(id: number) {
+    const quote = await this.prismaService.quote.findUnique({
+      where: { id },
+    })
+    if (!quote) throw new QuoteNotFoundException(id)
+
+    return { data: quote }
   }
 
-  update(id: number, updateQuoteDto: UpdateQuoteDto) {
-    this.quotes[id] = updateQuoteDto
-    return { data: this.quotes[id] }
+  async update(id: number, updateQuoteDto: UpdateQuoteDto) {
+    try {
+      return await this.prismaService.quote.update({
+        data: {
+          ...updateQuoteDto,
+          id: undefined,
+        },
+        where: { id },
+      })
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === PrismaError.RecordDoesNotExist
+      ) {
+        throw new QuoteNotFoundException(id)
+      }
+      throw error
+    }
   }
 
-  remove(id: number) {
-    const deletedItem = this.quotes[id]
-    delete this.quotes[id]
-    return {
-      message: 'Deleted',
-      data: deletedItem,
+  async remove(id: number) {
+    try {
+      const item = await this.prismaService.quote.delete({
+        where: { id },
+      })
+      return {
+        message: 'Deleted',
+        data: item,
+      }
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === PrismaError.RecordDoesNotExist
+      ) {
+        throw new QuoteNotFoundException(id)
+      }
+      throw error
     }
   }
 }
