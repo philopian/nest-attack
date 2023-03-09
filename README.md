@@ -31,3 +31,13 @@ $ yarn start:dev
       password: admin
     }
     ```
+- Create a `docker.env` file with
+```shell
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=admin
+POSTGRES_DB=nestjs
+PGADMIN_DEFAULT_EMAIL=admin@admin.com
+PGADMIN_DEFAULT_PASSWORD=admin
+```
+
+
