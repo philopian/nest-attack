@@ -14,7 +14,7 @@ export class QuotesService {
   constructor(private prismaService: PrismaService) {}
 
   async create(createQuoteDto: CreateQuoteDto) {
-    const newQuote = await this.prismaService.quote.create({
+    const newQuote = await this.prismaService.quotes.create({
       data: createQuoteDto,
     })
     this.logger.log('[create]', newQuote)
@@ -22,13 +22,13 @@ export class QuotesService {
   }
 
   async findAll() {
-    const data = await this.prismaService.quote.findMany()
+    const data = await this.prismaService.quotes.findMany()
     this.logger.log('[findAll]', data)
     return { data }
   }
 
   async findOne(id: number) {
-    const data = await this.prismaService.quote.findUnique({
+    const data = await this.prismaService.quotes.findUnique({
       where: { id },
     })
     if (!data) {
@@ -41,7 +41,7 @@ export class QuotesService {
 
   async update(id: number, updateQuoteDto: UpdateQuoteDto) {
     try {
-      const data = await this.prismaService.quote.update({
+      const data = await this.prismaService.quotes.update({
         data: {
           ...updateQuoteDto,
           id: undefined,
@@ -64,7 +64,7 @@ export class QuotesService {
 
   async remove(id: number) {
     try {
-      const data = await this.prismaService.quote.delete({
+      const data = await this.prismaService.quotes.delete({
         where: { id },
       })
       this.logger.log('[remove]', data)
