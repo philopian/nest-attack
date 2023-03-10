@@ -1,12 +1,14 @@
 @URL = http://localhost:3000
+@access_token = 
 
 ###
 POST {{URL}}/quotes HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{access_token}}
 
 {
-  "author": "Steve",
-  "quote":"sdkjfskjdfh"
+  "author": "Steve moke",
+  "quote":"yes yes yes"
 }
 
 ###

@@ -14,8 +14,7 @@ export class UsersService {
       const data = await this.prismaService.users.create({
         data: createUserDto,
       })
-      delete data.password
-      return { data }
+      return data
     } catch (error) {
       throw new HttpException(
         `User with ${createUserDto.email} already exists`,
@@ -32,11 +31,18 @@ export class UsersService {
       if (!data) {
         throw new HttpException(`User with ${email} does not exist`, HttpStatus.NOT_FOUND)
       }
-      delete data.password
-      return { data }
+
+      return data
     } catch (error) {
       throw new HttpException('Error: Not found', HttpStatus.INTERNAL_SERVER_ERROR)
     }
+  }
+
+  async getById(id: string) {
+    const data = await this.prismaService.users.findUnique({
+      where: { id },
+    })
+    return data
   }
 
   // async findAll() {

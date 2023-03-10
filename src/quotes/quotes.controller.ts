@@ -8,9 +8,11 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common'
 import { ApiTags, ApiParam } from '@nestjs/swagger'
 
+import JwtAuthenticationGuard from '../authentication/jwt-authentication.guard'
 import { CreateQuoteDto } from './dto/create-quote.dto'
 import { UpdateQuoteDto } from './dto/update-quote.dto'
 import { QuotesService } from './quotes.service'
@@ -21,6 +23,7 @@ export class QuotesController {
   constructor(private readonly quotesService: QuotesService) {}
 
   @Post()
+  @UseGuards(JwtAuthenticationGuard)
   @UsePipes(ValidationPipe)
   create(@Body() createQuoteDto: CreateQuoteDto) {
     return this.quotesService.create(createQuoteDto)
