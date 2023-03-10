@@ -7,7 +7,7 @@ content-type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "author": "Steve moke",
+  "author": "ffffff mokdfffffdddde",
   "quote":"yes yes yes"
 }
 
@@ -25,7 +25,7 @@ content-type: application/json
 {
   "id": 2,
   "author": "Mike",
-  "quote":"sdkjfskjdfh"
+  "quote":"sdkjsdfsadfasdffskjdfh"
 }
 
 

@@ -33,7 +33,7 @@ export class AuthenticationController {
 
   @HttpCode(200)
   @UseGuards(LocalAuthenticationGuard)
-  @Post('log-in')
+  @Post('login')
   @ApiBody({ type: LogInDto })
   @UsePipes(ValidationPipe)
   async logIn(@Req() request: RequestWithUser, @Res() response: Response) {

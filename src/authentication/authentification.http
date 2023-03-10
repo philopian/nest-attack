@@ -16,7 +16,7 @@ content-type: application/json
 
 
 ###
-POST {{URL}}/authentication/log-in HTTP/1.1
+POST {{URL}}/authentication/login HTTP/1.1
 content-type: application/json
 
 {
@@ -24,5 +24,3 @@ content-type: application/json
   "password": "123456789"
 }
 
-
-# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZmJiNWZlNi0yYTQ0LTRlZWYtYTc5Mi0yYmY3Y2M2OGViMDEiLCJpYXQiOjE2Nzg0MTA3MTEsImV4cCI6MTY3ODQ5NzExMX0.1UGdC4UHuWDYQgI-lr9Yy8ySmiDyNeMGAGyJDWRwSOA
