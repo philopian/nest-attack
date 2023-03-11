@@ -1,5 +1,5 @@
 {
-  "name": "snack-attack",
+  "name": "nest-attack",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -10,7 +10,7 @@
     "build": "nest build",
     "postbuild": "lambda-zipper build -f dist -o build/app.zip",
     "docker:build": "./docker-build.sh",
-    "docker:run": "docker run --name snack-attack --rm  -p 3000:3000 -t snack-attack-api",
+    "docker:run": "docker run --name nest-attack --rm  -p 3000:3000 -t nest-attack-api",
     "docker:db:up": "docker-compose up",
     "docker:db:down": "docker-compose down",
     "preprisma:snapshot": "cat prisma/base.prisma > prisma/schema.prisma && cat src/*/*.prisma >> prisma/schema.prisma",
