@@ -16,11 +16,11 @@ const EnvModule = ConfigModule.forRoot({
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         DATABASE_URL: Joi.string().required(),
+        PORT: Joi.number(),
 
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRATION_TIME: Joi.string().required(),
-
-        PORT: Joi.number(),
+        TWO_FACTOR_AUTHENTICATION_APP_NAME: Joi.string().required(),
       }),
     }),
     AuthenticationModule,

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable, Logger, Body } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
@@ -7,22 +7,25 @@ import { UsersService } from '../users/users.service'
 import PostgresErrorCode from '../utils/pg-error-codes.enum'
 import RegisterDto from './dto/register.dto'
 import TokenPayload from './tokenPayload.interface'
+import { TwoFactorAuthenticationService } from './two-factor/two-factor-auth.service'
 
 @Injectable()
 export class AuthenticationService {
   private readonly logger = new Logger(AuthenticationService.name)
   constructor(
+    private readonly twoFactorAuthenticationService: TwoFactorAuthenticationService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
 
-  public async register(registrationData: RegisterDto) {
+  public async register(@Body() registrationData: RegisterDto) {
     const hashedPassword = await bcrypt.hash(registrationData.password, 10)
     try {
       const createdUser = await this.usersService.create({
         ...registrationData,
         password: hashedPassword,
+        isTwoFactorAuthEnabled: false,
       })
 
       delete createdUser.password
@@ -40,13 +43,20 @@ export class AuthenticationService {
     const payload: TokenPayload = { userId }
 
     const token = this.jwtService.sign(payload)
-
-    console.log('[token]', token)
     return token
   }
 
-  public getCookieForLogOut() {
-    return `Authentication=; HttpOnly; Path=/; Max-Age=0`
+  public getJwtAccessTokenWith2FA(userId: string, isSecondFactorAuthenticated = false) {
+    const payload: TokenPayload = { userId, isSecondFactorAuthenticated }
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: `${this.configService.get('JWT_EXPIRATION_TIME')}s`,
+    })
+    return token
+  }
+
+  public getForLogOut() {
+    return `...`
   }
 
   public async getAuthenticatedUser(email: string, plainTextPassword: string) {

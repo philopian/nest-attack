@@ -1,26 +1,144 @@
-@URL = http://localhost:3000
+@BASE_URL = http://localhost:3000
+@email = hello@hello.com
+@password = 123456789
 
-###
-POST {{URL}}/authentication/register HTTP/1.1
+
+
+
+
+##############################################################
+### Register a new user and get a MFA token
+POST {{BASE_URL}}/authentication/register HTTP/1.1
 content-type: application/json
 
 {
-  "email": "email@email.com",
-  "name":"hsflh", 
-  "password":"123456789"
+  "email": "{{email}}",
+  "name": "Michael Jackson",  
+  "password":"{{password}}"
 }
 
-
-
-
-
-
-###
-POST {{URL}}/authentication/login HTTP/1.1
+### Login and get a MFA token
+POST {{BASE_URL}}/authentication/login HTTP/1.1
 content-type: application/json
 
 {
-  "email": "hello@hello.com",
-  "password": "123456789"
+  "email": "{{email}}",
+  "password": "{{password}}"
 }
+
+##############################################################
+@mfa_token = 
+##############################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##############################################################
+@google_authenticator_code = 
+##############################################################
+### Create a QR Code
+POST {{BASE_URL}}/2fa/generate HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{mfa_token}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### Go to Google Authenticator to get a code 
+POST {{BASE_URL}}/2fa/turn-on HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{mfa_token}}
+
+{
+  "twoFactorAuthenticationCode": "{{google_authenticator_code}}"
+}
+##############################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##############################################################
+@google_authenticator_code = 133318
+##############################################################
+### Get an accessToken
+POST {{BASE_URL}}/2fa/authenticate HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{mfa_token}}
+
+{
+    "twoFactorAuthenticationCode": "{{google_authenticator_code}}"
+}
+
+##############################################################
+@access_token = 
+##############################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##############################################################
+#
+#  NOTE:
+#     MFA enable you need to use your `access_token`
+#
+##############################################################
+### Get some private data
+GET {{BASE_URL}}/quotes HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{access_token}}
+
+
+##############################################################
+
+
+
+
+##############################################################
+#
+#  NOTE:
+#     If you don't have MFA enabled you can use your `mfa_token`
+#
+##############################################################
+### Get some private data
+GET {{BASE_URL}}/quotes HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{mfa_token}}
+##############################################################
+
+
+
 

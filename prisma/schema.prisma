@@ -17,8 +17,10 @@ model quotes {
   author    String
 }
 model users {
-  id          String       @id @default(uuid())
-  email       String       @unique
-  name        String
-  password    String
+  id                      String       @id @default(uuid())
+  email                   String       @unique
+  name                    String
+  password                String
+  isTwoFactorAuthEnabled  Boolean
+  twoFactorAuthSecret     String?
 }

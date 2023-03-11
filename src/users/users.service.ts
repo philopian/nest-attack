@@ -12,10 +12,11 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     try {
       const data = await this.prismaService.users.create({
-        data: createUserDto,
+        data: { ...createUserDto, isTwoFactorAuthEnabled: false },
       })
       return data
     } catch (error) {
+      console.log(error)
       throw new HttpException(
         `User with ${createUserDto.email} already exists`,
         HttpStatus.CONFLICT,
@@ -56,4 +57,38 @@ export class UsersService {
   // async remove(id: number) {
   //   return `This action removes a #${id} user`
   // }
+
+  async setTwoFactorAuthenticationSecret(secret: string, userId: string) {
+    await this.prismaService.users.update({
+      data: {
+        // With Prisma when a field is assigned undefined it means ignore this and do nothing for this field.
+        id: undefined,
+        email: undefined,
+        name: undefined,
+        password: undefined,
+        isTwoFactorAuthEnabled: undefined,
+        twoFactorAuthSecret: secret,
+      },
+      where: { id: userId },
+    })
+  }
+
+  async turnOnTwoFactorAuthentication(userId: string) {
+    try {
+      await this.prismaService.users.update({
+        data: {
+          // With Prisma when a field is assigned undefined it means ignore this and do nothing for this field.
+          id: undefined,
+          email: undefined,
+          name: undefined,
+          password: undefined,
+          isTwoFactorAuthEnabled: true,
+        },
+        where: { id: userId },
+      })
+      return { message: 'TwoFactor Authentication is not turned on' }
+    } catch (error) {
+      throw error
+    }
+  }
 }

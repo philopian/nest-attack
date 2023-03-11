@@ -41,3 +41,32 @@ $ yarn start:dev
   ```
 
 
+
+# Login flow
+- Install Google Authenticator mobile app or chrome extension
+
+- Register/login (both get a `mfa_token`)
+1. [POST] {{base_url}}/authentication/register
+2. [POST] {{base_url}}/authentication/login
+
+- Enable 2Factor Auth (do this once)
+  1. [POST] {{base_url}}/2fa/generate + `mfa_token`
+  2. [POST] {{base_url}}/2fa/turn-on + `mfa_token`
+
+- Get JWT accessToken
+  1. [POST] {{base_url}}/2fa/authenticate + `mfa_token` + Google Authenticator code
+
+- Make calls the the REST service
+  - [GET] {{base_url}}/quotes
+  - [POST] {{base_url}}/quotes
+
+
+
+
+
+
+
+
+
+
+

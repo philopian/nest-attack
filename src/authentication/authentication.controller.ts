@@ -27,8 +27,19 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Post('register')
-  async register(@Body() registrationData: RegisterDto) {
-    return this.authenticationService.register(registrationData)
+  async register(@Body() registrationData: RegisterDto, @Res() response: Response) {
+    const userInfo = await this.authenticationService.register(registrationData)
+    delete userInfo.isTwoFactorAuthEnabled
+    delete userInfo.twoFactorAuthSecret
+
+    const accessToken = this.authenticationService.getJwtToken(userInfo.id)
+    response.setHeader('Authorization', `Bearer ${accessToken}`)
+
+    return response.send({
+      message: 'Multifactor authentication required',
+      mfa_token: accessToken,
+      data: { ...userInfo },
+    })
   }
 
   @HttpCode(200)
@@ -37,28 +48,36 @@ export class AuthenticationController {
   @ApiBody({ type: LogInDto })
   @UsePipes(ValidationPipe)
   async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
-    console.log('[logIn]', 'sdfsdfsdfsdf')
     const { user } = request
 
     const accessToken = this.authenticationService.getJwtToken(user.id)
     response.setHeader('Authorization', `Bearer ${accessToken}`)
     user.password = undefined
     this.logger.log('[login]', user)
-    return response.send(user)
+
+    if (user.isTwoFactorAuthEnabled) {
+      return response.send({
+        title: 'mfa_required',
+        description: 'Multifactor authentication required',
+        mfa_token: accessToken,
+      })
+    }
+    return response.send({ ...user, accessToken })
   }
 
+  // TODO: Implement this!!
   @UseGuards(JwtAuthenticationGuard)
-  @Post('log-out')
+  @Post('logout')
   async logOut(@Res() response: Response) {
-    response.setHeader('Set-Cookie', this.authenticationService.getCookieForLogOut())
+    // response.setHeader('Authorization', "")
     return response.sendStatus(200)
   }
 
-  @UseGuards(JwtAuthenticationGuard)
-  @Get()
-  authenticate(@Req() request: RequestWithUser) {
-    const user = request.user
-    user.password = undefined
-    return user
-  }
+  // @UseGuards(JwtAuthenticationGuard)
+  // @Get()
+  // authenticate(@Req() request: RequestWithUser) {
+  //   const user = request.user
+  //   user.password = undefined
+  //   return user
+  // }
 }

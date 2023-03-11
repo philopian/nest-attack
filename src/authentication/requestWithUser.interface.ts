@@ -1,12 +1,6 @@
 import { Request } from 'express'
 
-export interface User {
-  id: string
-  email: string
-  // name: string
-  password: string
-  // isTwoFactorAuthenticationEnabled: boolean
-}
+import { User } from '../users/users.interface'
 
 interface RequestWithUser extends Request {
   user: User

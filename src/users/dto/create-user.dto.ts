@@ -15,4 +15,6 @@ export class CreateUserDto {
   @Length(3, 30)
   @IsString()
   password: string
+
+  isTwoFactorAuthEnabled: boolean
 }
