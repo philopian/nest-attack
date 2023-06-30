@@ -1,5 +1,5 @@
 {
-  "name": "nest-attack",
+  "name": "nestjs-passport-mfa",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -10,13 +10,13 @@
     "build": "nest build",
     "postbuild": "lambda-zipper build -f dist -o build/app.zip",
     "docker:build": "./docker-build.sh",
-    "docker:run": "docker run --name nest-attack --rm  -p 3000:3000 -t nest-attack-api",
+    "docker:run": "docker run --name nestjs-passport-mfa --rm  -p 3000:3000 -t nestjs-passport-mfa-api",
     "docker:db:up": "docker-compose up",
     "docker:db:down": "docker-compose down",
     "preprisma:snapshot": "cat prisma/base.prisma > prisma/schema.prisma && cat src/*/*.prisma >> prisma/schema.prisma",
     "prisma:snapshot": "npx prisma migrate dev --name migrate --preview-feature",
-    "preprisma:push": "cat prisma/base.prisma > prisma/schema.prisma && cat src/*/*.prisma >> prisma/schema.prisma",
-    "prisma:push": "prisma db push",
+    "preprisma": "cat prisma/base.prisma > prisma/schema.prisma && cat src/*/*.prisma >> prisma/schema.prisma",
+    "prisma": "prisma db push",
     "format": "prettier --write \"src/*.ts\" \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node main",
     "start:dev": "nest start --watch",
@@ -29,7 +29,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "new": "nest generate resource",
-    "postnew": "yarn lint"
+    "postnew": "yarn lint",
+    "gen:random": "node -e \"console.log(require('crypto').randomBytes(256).toString('base64'))\""
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -45,6 +46,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/passport-jwt": "^3.0.8",
     "@types/passport-local": "^1.0.35",
+    "@vendia/serverless-express": "^4.10.1",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "otplib": "^12.0.1",
