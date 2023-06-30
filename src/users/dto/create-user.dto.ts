@@ -16,5 +16,5 @@ export class CreateUserDto {
   @IsString()
   password: string
 
-  isTwoFactorAuthEnabled: boolean
+  isMfaAuthEnabled: boolean
 }

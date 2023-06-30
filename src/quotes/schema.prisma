@@ -1,7 +1,5 @@
-
-
 model quotes {
-  id        Int      @default(autoincrement()) @id
-  quote     String
-  author    String
+  id     Int    @id @default(autoincrement())
+  quote  String
+  author String
 }

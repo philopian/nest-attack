@@ -8,11 +8,12 @@ import { UsersService } from '../users/users.service'
 import { PrismaService } from '../utils/prisma/prisma.service'
 import { AuthenticationController } from './authentication.controller'
 import { AuthenticationService } from './authentication.service'
-import { JwtTwoFactorStrategy } from './jwt-two-factor.strategy'
+import { JwtMfaStrategy } from './jwt-mfa.strategy'
+import { JwtRefreshTokenStrategy } from './jwt-refresh-token.strategy'
 import { JwtStrategy } from './jwt.strategy'
 import { LocalStrategy } from './local.strategy'
-import { TwoFactorAuthenticationController } from './two-factor/two-factor-auth.controller'
-import { TwoFactorAuthenticationService } from './two-factor/two-factor-auth.service'
+import { MfaAuthenticationController } from './mfa/mfa-auth.controller'
+import { MfaAuthenticationService } from './mfa/mfa-auth.service'
 
 @Module({
   imports: [
@@ -34,11 +35,12 @@ import { TwoFactorAuthenticationService } from './two-factor/two-factor-auth.ser
     AuthenticationService,
     LocalStrategy,
     JwtStrategy,
-    TwoFactorAuthenticationService,
-    JwtTwoFactorStrategy,
+    JwtRefreshTokenStrategy,
+    MfaAuthenticationService,
+    JwtMfaStrategy,
     UsersService,
     PrismaService,
   ],
-  controllers: [AuthenticationController, TwoFactorAuthenticationController],
+  controllers: [AuthenticationController, MfaAuthenticationController],
 })
 export class AuthenticationModule {}

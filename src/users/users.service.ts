@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import * as bcrypt from 'bcrypt'
 
 import { PrismaService } from '../utils/prisma/prisma.service'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -12,7 +13,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     try {
       const data = await this.prismaService.users.create({
-        data: { ...createUserDto, isTwoFactorAuthEnabled: false },
+        data: { ...createUserDto, isMfaAuthEnabled: false },
       })
       return data
     } catch (error) {
@@ -58,7 +59,7 @@ export class UsersService {
   //   return `This action removes a #${id} user`
   // }
 
-  async setTwoFactorAuthenticationSecret(secret: string, userId: string) {
+  async setMfaAuthenticationSecret(secret: string, userId: string) {
     await this.prismaService.users.update({
       data: {
         // With Prisma when a field is assigned undefined it means ignore this and do nothing for this field.
@@ -66,14 +67,14 @@ export class UsersService {
         email: undefined,
         name: undefined,
         password: undefined,
-        isTwoFactorAuthEnabled: undefined,
-        twoFactorAuthSecret: secret,
+        isMfaAuthEnabled: undefined,
+        mfaAuthSecret: secret,
       },
       where: { id: userId },
     })
   }
 
-  async turnOnTwoFactorAuthentication(userId: string) {
+  async turnOnMfaAuthentication(userId: string) {
     try {
       await this.prismaService.users.update({
         data: {
@@ -82,11 +83,65 @@ export class UsersService {
           email: undefined,
           name: undefined,
           password: undefined,
-          isTwoFactorAuthEnabled: true,
+          isMfaAuthEnabled: true,
         },
         where: { id: userId },
       })
-      return { message: 'TwoFactor Authentication is not turned on' }
+      return { message: 'Mfa Authentication is not turned on' }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async setCurrentRefreshToken(refreshToken: string | null, userId: string) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10)
+    try {
+      await this.prismaService.users.update({
+        data: {
+          // With Prisma when a field is assigned undefined it means ignore this and do nothing for this field.
+          id: undefined,
+          email: undefined,
+          name: undefined,
+          password: undefined,
+          isMfaAuthEnabled: undefined,
+          currentHashedRefreshToken,
+        },
+        where: { id: userId },
+      })
+      return { message: 'Set current RefreshToken' }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    const user = await this.getById(userId)
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    )
+
+    if (isRefreshTokenMatching) {
+      return user
+    }
+  }
+
+  async removeRefreshToken(userId: string) {
+    try {
+      await this.prismaService.users.update({
+        data: {
+          // With Prisma when a field is assigned undefined it means ignore this and do nothing for this field.
+          id: undefined,
+          email: undefined,
+          name: undefined,
+          password: undefined,
+          isMfaAuthEnabled: undefined,
+          currentHashedRefreshToken: null,
+        },
+        where: { id: userId },
+      })
+      return { message: 'Removed RefreshToken' }
     } catch (error) {
       throw error
     }

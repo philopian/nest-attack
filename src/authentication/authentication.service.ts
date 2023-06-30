@@ -6,14 +6,14 @@ import * as bcrypt from 'bcrypt'
 import { UsersService } from '../users/users.service'
 import PostgresErrorCode from '../utils/pg-error-codes.enum'
 import RegisterDto from './dto/register.dto'
+import { MfaAuthenticationService } from './mfa/mfa-auth.service'
 import TokenPayload from './tokenPayload.interface'
-import { TwoFactorAuthenticationService } from './two-factor/two-factor-auth.service'
 
 @Injectable()
 export class AuthenticationService {
   private readonly logger = new Logger(AuthenticationService.name)
   constructor(
-    private readonly twoFactorAuthenticationService: TwoFactorAuthenticationService,
+    private readonly mfaAuthenticationService: MfaAuthenticationService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
@@ -25,7 +25,7 @@ export class AuthenticationService {
       const createdUser = await this.usersService.create({
         ...registrationData,
         password: hashedPassword,
-        isTwoFactorAuthEnabled: false,
+        isMfaAuthEnabled: false,
       })
 
       delete createdUser.password
@@ -42,28 +42,36 @@ export class AuthenticationService {
   public getJwtToken(userId: string) {
     const payload: TokenPayload = { userId }
 
-    const token = this.jwtService.sign(payload)
-    return token
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: `${this.configService.get('JWT_EXPIRATION_TIME')}s`,
+    })
+    return accessToken
   }
 
-  public getJwtAccessTokenWith2FA(userId: string, isSecondFactorAuthenticated = false) {
+  public getJwtAccessTokenWithMFA(userId: string, isSecondFactorAuthenticated = false) {
     const payload: TokenPayload = { userId, isSecondFactorAuthenticated }
-    const token = this.jwtService.sign(payload, {
+    const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),
       expiresIn: `${this.configService.get('JWT_EXPIRATION_TIME')}s`,
     })
-    return token
+    return accessToken
   }
 
-  public getForLogOut() {
-    return `...`
+  public getJwtRefreshToken(userId: string) {
+    const payload: TokenPayload = { userId }
+    const refreshToken = this.jwtService.sign(payload, {
+      // secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')}s`,
+    })
+
+    return refreshToken
   }
 
   public async getAuthenticatedUser(email: string, plainTextPassword: string) {
     try {
-      const user = await this.usersService.getByEmail(email)
-      await this.verifyPassword(plainTextPassword, user.password)
-      return user
+      const authenticatedUser = await this.usersService.getByEmail(email)
+      await this.verifyPassword(plainTextPassword, authenticatedUser.password)
+      return authenticatedUser
     } catch (error) {
       throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST)
     }

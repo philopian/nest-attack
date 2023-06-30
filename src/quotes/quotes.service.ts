@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 import { PrismaError } from '../utils/prisma/prisma-error'
 import { PrismaService } from '../utils/prisma/prisma.service'

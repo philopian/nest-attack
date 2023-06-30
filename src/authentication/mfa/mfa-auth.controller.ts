@@ -16,14 +16,14 @@ import { UsersService } from '../../users/users.service'
 import { AuthenticationService } from '../authentication.service'
 import JwtAuthenticationGuard from '../jwt-authentication.guard'
 import RequestWithUser from '../requestWithUser.interface'
-import { TwoFactorAuthenticationCodeDto } from './dto/two-factor-auth-code.dto'
-import { TwoFactorAuthenticationService } from './two-factor-auth.service'
+import { MfaAuthenticationCodeDto } from './dto/mfa-auth-code.dto'
+import { MfaAuthenticationService } from './mfa-auth.service'
 
-@Controller('2fa')
+@Controller('mfa')
 @UseInterceptors(ClassSerializerInterceptor)
-export class TwoFactorAuthenticationController {
+export class MfaAuthenticationController {
   constructor(
-    private readonly twoFactorAuthenticationService: TwoFactorAuthenticationService,
+    private readonly mfaAuthenticationService: MfaAuthenticationService,
     private readonly usersService: UsersService,
     private readonly authenticationService: AuthenticationService,
   ) {}
@@ -31,29 +31,30 @@ export class TwoFactorAuthenticationController {
   @Post('generate')
   @UseGuards(JwtAuthenticationGuard)
   async register(@Res() response: Response, @Req() request: RequestWithUser) {
-    const { otpauthUrl } =
-      await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(request.user)
+    const { otpauthUrl } = await this.mfaAuthenticationService.generateMfaAuthenticationSecret(
+      request.user,
+    )
 
-    return this.twoFactorAuthenticationService.pipeQrCodeStream(response, otpauthUrl)
+    return this.mfaAuthenticationService.pipeQrCodeStream(response, otpauthUrl)
   }
 
   @Post('turn-on')
   @HttpCode(200)
   @UseGuards(JwtAuthenticationGuard)
-  async turnOnTwoFactorAuthentication(
+  async turnOnMfaAuthentication(
     @Req() request: RequestWithUser,
-    @Body() { twoFactorAuthenticationCode }: TwoFactorAuthenticationCodeDto,
+    @Body() { mfaAuthenticationCode }: MfaAuthenticationCodeDto,
   ) {
-    const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthenticationCode,
+    const isCodeValid = this.mfaAuthenticationService.isMfaAuthenticationCodeValid(
+      mfaAuthenticationCode,
       request.user,
     )
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong authentication code')
     }
-    await this.usersService.turnOnTwoFactorAuthentication(request.user.id)
+    await this.usersService.turnOnMfaAuthentication(request.user.id)
     return {
-      message: `2Factor Auth is enabled for user ${request.user.email}`,
+      message: `MFA Auth is enabled for user ${request.user.email}`,
     }
   }
 
@@ -62,17 +63,17 @@ export class TwoFactorAuthenticationController {
   @UseGuards(JwtAuthenticationGuard)
   async authenticate(
     @Req() request: RequestWithUser,
-    @Body() { twoFactorAuthenticationCode }: TwoFactorAuthenticationCodeDto,
+    @Body() { mfaAuthenticationCode }: MfaAuthenticationCodeDto,
   ) {
-    const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
-      twoFactorAuthenticationCode,
+    const isCodeValid = this.mfaAuthenticationService.isMfaAuthenticationCodeValid(
+      mfaAuthenticationCode,
       request.user,
     )
     if (!isCodeValid) {
       throw new UnauthorizedException('Wrong authentication code')
     }
 
-    const accessToken = this.authenticationService.getJwtAccessTokenWith2FA(request.user.id, true)
+    const accessToken = this.authenticationService.getJwtAccessTokenWithMFA(request.user.id, true)
 
     request.res.setHeader('Authorization', `Bearer ${accessToken}`)
 

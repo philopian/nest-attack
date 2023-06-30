@@ -3,6 +3,6 @@ export interface User {
   name: string
   email: string
   password: string
-  isTwoFactorAuthEnabled: boolean
-  twoFactorAuthSecret?: string
+  isMfaAuthEnabled: boolean
+  mfaAuthSecret?: string
 }

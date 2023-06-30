@@ -19,7 +19,7 @@ model users {
   email                     String  @unique
   name                      String
   password                  String
-  isTwoFactorAuthEnabled    Boolean
-  twoFactorAuthSecret       String?
+  isMfaAuthEnabled          Boolean
+  mfaAuthSecret             String?
   currentHashedRefreshToken String?
 }

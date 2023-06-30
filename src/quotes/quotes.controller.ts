@@ -12,8 +12,7 @@ import {
 } from '@nestjs/common'
 import { ApiTags, ApiParam } from '@nestjs/swagger'
 
-import JwtAuthenticationGuard from '../authentication/jwt-authentication.guard'
-import JwtTwoFactorGuard from '../authentication/jwt-two-factor.guard'
+import JwtMfaGuard from '../authentication/jwt-mfa.guard'
 import { CreateQuoteDto } from './dto/create-quote.dto'
 import { UpdateQuoteDto } from './dto/update-quote.dto'
 import { QuotesService } from './quotes.service'
@@ -24,20 +23,20 @@ export class QuotesController {
   constructor(private readonly quotesService: QuotesService) {}
 
   @Post()
-  @UseGuards(JwtTwoFactorGuard)
+  @UseGuards(JwtMfaGuard)
   @UsePipes(ValidationPipe)
   create(@Body() createQuoteDto: CreateQuoteDto) {
     return this.quotesService.create(createQuoteDto)
   }
 
   @Get()
-  @UseGuards(JwtTwoFactorGuard)
+  @UseGuards(JwtMfaGuard)
   findAll() {
     return this.quotesService.findAll()
   }
 
   @Get(':id')
-  @UseGuards(JwtTwoFactorGuard)
+  @UseGuards(JwtMfaGuard)
   @ApiParam({
     name: 'id',
     required: true,
@@ -49,7 +48,7 @@ export class QuotesController {
   }
 
   @Put(':id')
-  @UseGuards(JwtTwoFactorGuard)
+  @UseGuards(JwtMfaGuard)
   @ApiParam({
     name: 'id',
     required: true,
@@ -62,7 +61,7 @@ export class QuotesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtTwoFactorGuard)
+  @UseGuards(JwtMfaGuard)
   @ApiParam({
     name: 'id',
     required: true,

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator'
 
-export class TwoFactorAuthenticationCodeDto {
+export class MfaAuthenticationCodeDto {
   @IsString()
   @IsNotEmpty()
-  twoFactorAuthenticationCode: string
+  mfaAuthenticationCode: string
 }

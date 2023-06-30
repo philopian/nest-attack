@@ -8,22 +8,22 @@ import { User } from '../../users/users.interface'
 import { UsersService } from '../../users/users.service'
 
 @Injectable()
-export class TwoFactorAuthenticationService {
+export class MfaAuthenticationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {}
 
-  public async generateTwoFactorAuthenticationSecret(user: User) {
+  public async generateMfaAuthenticationSecret(user: User) {
     const secret = authenticator.generateSecret()
 
     const otpauthUrl = authenticator.keyuri(
       user.email,
-      this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'),
+      this.configService.get('MFA_AUTHENTICATION_APP_NAME'),
       secret,
     )
 
-    await this.usersService.setTwoFactorAuthenticationSecret(secret, user.id)
+    await this.usersService.setMfaAuthenticationSecret(secret, user.id)
 
     return {
       secret,
@@ -31,14 +31,14 @@ export class TwoFactorAuthenticationService {
     }
   }
 
-  public isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, user: User) {
+  public isMfaAuthenticationCodeValid(mfaAuthenticationCode: string, user: User) {
     console.log({
-      token: twoFactorAuthenticationCode,
-      secret: user.twoFactorAuthSecret,
+      token: mfaAuthenticationCode,
+      secret: user.mfaAuthSecret,
     })
     return authenticator.verify({
-      token: twoFactorAuthenticationCode,
-      secret: user.twoFactorAuthSecret,
+      token: mfaAuthenticationCode,
+      secret: user.mfaAuthSecret,
     })
   }
 

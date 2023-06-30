@@ -1,4 +1,5 @@
-@URL = http://localhost:3000
+@PORT=3000
+@URL = http://localhost:{{PORT}}
 @access_token = 
 
 ###
