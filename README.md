@@ -1,12 +1,21 @@
 # Nestjs-Passport-MFA
 
-This is a server implementation of a Nestjs server that leverages Passportjs & Google Authenticator for the MFA. It is also written in Typescript and uses Docker for the Postgres Database and prisma to CRUD the data for the app
+This is a server implementation of a Nestjs server that leverages:
+  - Makefile
+  - Docker (spinning up Postgres & PGAdmin)
+  - Postgres
+  - Prisma (ORM)
+  - Typescript
+  - NestJS
+  - PassportJS
+  - Google Authenticator (for MFA)
+  - Sawgger at `localhost:<PORT>/docs`
 
 
 # Getting Started
 1. Make your .env file
   - You can create a random key for you `JWT_SECRET` & `JWT_REFRESH_TOKEN_SECRET` by running `$ make key`
-  - Example `.env` file
+  - Example `.env` or `.env.dev` file
     ```bash
     PORT=3003
 

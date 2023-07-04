@@ -7,7 +7,7 @@ import { QuotesModule } from './quotes/quotes.module'
 import { UsersModule } from './users/users.module'
 
 const EnvModule = ConfigModule.forRoot({
-  envFilePath: ['.env.local', '.env'],
+  envFilePath: ['.env.dev', '.env'],
 })
 
 @Module({

@@ -1,11 +1,10 @@
 
 
-
-db:
-	docker-compose up -d
-
 # DEVELOPMENT
 dev:
+	docker-compose up -d postgres
+	dockerize -wait tcp://localhost:5432 -timeout 1m
+	docker-compose up -d
 	yarn prisma
 	yarn start:dev
 
